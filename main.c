@@ -1,14 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mtomomit <mtomomit@student.42sp.org.br>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/10 19:52:53 by mtomomit          #+#    #+#             */
-/*   Updated: 2024/04/10 19:52:54 by mtomomit         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include <stdlib.h>
 
-#include <unistd.h>
-#include <sys/mman.h>
+int main(){
+	void *teste = malloc(1);
+	if (teste == NULL)
+		return 1;
+	return 2;
+}

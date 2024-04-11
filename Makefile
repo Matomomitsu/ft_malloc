@@ -6,73 +6,27 @@
 #    By: mtomomit <mtomomit@student.42sp.org.br>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/10 19:56:18 by mtomomit          #+#    #+#              #
-#    Updated: 2024/04/10 19:56:20 by mtomomit         ###   ########.fr        #
+#    Updated: 2024/04/10 22:14:30 by mtomomit         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME				=	cub3D
+NAME				=	libft_malloc
 
-LFT					=	./libs/libft/libft.a
-LFTDIR				=	./libs/libft/
-MLXDIR				=	./libs/minilibx_linux/
+LFT					=	./libft/libft.a
+LFTDIR				=	./libft/
 SRCDIR				=	src/
 OBJDIR				=	obj/
 INCDIR				=	inc/
 
-BIN					=	bin/cub3D
+BIN					=	bin/malloc
 REQUIRED_DIRS		=	$(OBJDIR) bin/
 
-LFTFLAGS			=	-lft -lmlx -lm -lbsd -lXext -lX11 -lft
-CFLAGS				=	-Wall -Werror -Wextra
+CFLAGS				=	-Wall -Werror -Wextra -fPIC
 CFLAGS				+=	-g -I $(LFTDIR) -I $(INCDIR)
 CC 					= 	cc -O3
 CC                  +=  -mno-vzeroupper -funroll-loops -flto -finline-functions
-FILES				=	algorithms/bresenham.c				\
-						algorithms/dda.c					\
-						algorithms/map_parse.c				\
-						algorithms/init.c					\
-						button/button_utils.c				\
-						button/button.c						\
-						color/brightness.c					\
-						color/conversions.c					\
-						color/int_to_rgb.c					\
-						destroy/destroy_level.c				\
-						destroy/destroy.c					\
-						destroy/exit.c						\
-						draw/draw.c							\
-						draw/texture.c						\
-						get_data/colors.c					\
-						get_data/coordinates.c				\
-						get_data/data.c						\
-						get_data/levels.c					\
-						get_data/player.c					\
-						get_data/texture.c					\
-						get_data/validations.c				\
-						init/dda.c							\
-						init/init.c							\
-						init/keys.c							\
-						init/map.c							\
-						init/mlx.c							\
-						map/levels.c						\
-						map/map_utils.c						\
-						map/map.c							\
-						minimap/init.c						\
-						minimap/minimap.c					\
-						mlx/hooks/key_handle.c				\
-						mlx/hooks/level.c					\
-						mlx/hooks/loop.c					\
-						mlx/hooks/mouse.c					\
-						mlx/hooks/resize.c					\
-						mlx/hooks/toggle.c					\
-						mlx/pixel_put.c						\
-						player/camera.c						\
-						player/movements.c					\
-						player/movements_utils.c			\
-						player/rotate.c						\
-						player/speed.c						\
-						init.c								\
-						main.c								\
-						parse.c
+FILES				=	main.c \
+						teste.c
 SRC					=	$(addprefix $(SRCDIR), $(FILES))
 OBJ					=	$(addprefix $(OBJDIR), $(FILES:.c=.o))
 
@@ -85,34 +39,25 @@ COLOR_BLUE			=	\e[34m
 NUMBER_SRC_FILES	=	$(words $(SRC))
 PROGRESS			=	0
 
-all: $(NAME)
+ifeq ($(HOSTTYPE),"")
+	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
+endif
+
+all: $(NAME)_$(HOSTTYPE).so
 
 $(REQUIRED_DIRS):
 	@mkdir -p $@
-	@mkdir -p $@algorithms
-	@mkdir -p $@destroy
-	@mkdir -p $@color
-	@mkdir -p $@draw
-	@mkdir -p $@get_data
-	@mkdir -p $@mlx
-	@mkdir -p $@mlx/hooks
-	@mkdir -p $@player
-	@mkdir -p $@minimap
-	@mkdir -p $@button
-	@mkdir -p $@init
-	@mkdir -p $@map
 
 $(OBJDIR)%.o: $(SRCDIR)%.c
 	@echo -n "$(COLOR_YELLOW)Compiling $(NAME) $(COLOR_WHITE)$$(( \
 	$(PROGRESS) * 100 / $(NUMBER_SRC_FILES)))%\r"
 	$(eval PROGRESS=$(shell echo $$(($(PROGRESS)+1))))
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c -fPIC $< -o $@
 
-$(NAME): $(LFT) $(REQUIRED_DIRS) $(OBJ) $(MLX)
-	$(CC) $(CFLAGS) $(OBJ) -L $(LFTDIR) $(LFTFLAGS) -o $(BIN)
-	cp $(BIN) $(NAME)
-	@echo "$(COLOR_GREEN)$(NAME) has compiled succesfully\
-	$(COLOR_WHITE)"
+$(NAME)_$(HOSTTYPE).so: $(LFT) $(REQUIRED_DIRS) $(OBJ)
+	$(CC) $(OBJ) -shared -o $(NAME)_$(HOSTTYPE).so -L./libft -lft
+	ln -sf $(NAME)_$(HOSTTYPE).so $(NAME).so
+	@echo "$(COLOR_GREEN)$(NAME) has compiled succesfully$(COLOR_WHITE)"
 
 $(OBJ_DIR):
 	mkdir -p $@
@@ -120,14 +65,10 @@ $(OBJ_DIR):
 $(LFT):
 	make -C $(LFTDIR)
 
-$(MLX):
-	make -C $(MLXDIR)
-
 clean:
 	@echo "$(COLOR_BLUE)Removing all objects$(COLOR_WHITE)"
 	rm -rf $(OBJDIR)
 	cd $(LFTDIR) && make clean
-	cd $(MLXDIR) && make clean
 
 fclean: clean
 	@echo "$(COLOR_BLUE)Removing $(NAME)$(COLOR_WHITE)"
@@ -135,6 +76,7 @@ fclean: clean
 	rm -rf $(BIN)
 	rm -rf bin/
 	rm -rf $(LFT)
+	rm -rf $(NAME)_$(HOSTTYPE).so
 
 re: fclean all
 

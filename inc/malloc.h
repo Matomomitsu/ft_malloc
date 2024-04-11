@@ -1,33 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strmapi.c                                       :+:      :+:    :+:   */
+/*   malloc.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mtomomit <mtomomit@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/03 03:52:57 by mtomomit          #+#    #+#             */
-/*   Updated: 2022/04/27 22:24:23 by mtomomit         ###   ########.fr       */
+/*   Created: 2024/04/10 20:07:31 by mtomomit          #+#    #+#             */
+/*   Updated: 2024/04/10 21:52:35 by mtomomit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef MALLOC_H
+# define MALLOC_H
 
-char	*ft_strmapi(char const *s, char (*f)(unsigned int, char))
-{
-	size_t	strlens;
-	size_t	i;
-	char	*str;
+# include <unistd.h>
+# include <sys/mman.h>
+# include "../libft/libft.h"
 
-	i = 0;
-	strlens = ft_strlen(s);
-	str = (char *)malloc((strlens + 1) * sizeof(char));
-	if (str == NULL)
-		return (NULL);
-	str[strlens] = '\0';
-	while (i < strlens)
-	{
-		str[i] = f(i, s[i]);
-		i++;
-	}
-	return (str);
-}
+void *malloc(size_t size);
+int teste();
+
+#endif
