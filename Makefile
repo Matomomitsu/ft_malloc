@@ -6,11 +6,12 @@
 #    By: mtomomit <mtomomit@student.42sp.org.br>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/10 19:56:18 by mtomomit          #+#    #+#              #
-#    Updated: 2024/04/10 22:14:30 by mtomomit         ###   ########.fr        #
+#    Updated: 2024/05/08 21:59:46 by mtomomit         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME				=	libft_malloc
+HOSTTYPE			?=	$(shell uname -m)_$(shell uname -s)
 
 LFT					=	./libft/libft.a
 LFTDIR				=	./libft/
@@ -23,10 +24,8 @@ REQUIRED_DIRS		=	$(OBJDIR) bin/
 
 CFLAGS				=	-Wall -Werror -Wextra -fPIC
 CFLAGS				+=	-g -I $(LFTDIR) -I $(INCDIR)
-CC 					= 	cc -O3
-CC                  +=  -mno-vzeroupper -funroll-loops -flto -finline-functions
-FILES				=	main.c \
-						teste.c
+CC 					= 	gcc -O3
+FILES				=	main.c
 SRC					=	$(addprefix $(SRCDIR), $(FILES))
 OBJ					=	$(addprefix $(OBJDIR), $(FILES:.c=.o))
 
@@ -39,44 +38,37 @@ COLOR_BLUE			=	\e[34m
 NUMBER_SRC_FILES	=	$(words $(SRC))
 PROGRESS			=	0
 
-ifeq ($(HOSTTYPE),"")
-	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
-endif
-
 all: $(NAME)_$(HOSTTYPE).so
 
 $(REQUIRED_DIRS):
 	@mkdir -p $@
 
 $(OBJDIR)%.o: $(SRCDIR)%.c
-	@echo -n "$(COLOR_YELLOW)Compiling $(NAME) $(COLOR_WHITE)$$(( \
+	@echo -e "$(COLOR_YELLOW)Compiling $(NAME) $(COLOR_WHITE)$$(( \
 	$(PROGRESS) * 100 / $(NUMBER_SRC_FILES)))%\r"
 	$(eval PROGRESS=$(shell echo $$(($(PROGRESS)+1))))
-	@$(CC) $(CFLAGS) -c -fPIC $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME)_$(HOSTTYPE).so: $(LFT) $(REQUIRED_DIRS) $(OBJ)
-	$(CC) $(OBJ) -shared -o $(NAME)_$(HOSTTYPE).so -L./libft -lft
+	$(CC) $(OBJ) -shared -fPIC  -L./libft -lft -o $@
 	ln -sf $(NAME)_$(HOSTTYPE).so $(NAME).so
-	@echo "$(COLOR_GREEN)$(NAME) has compiled succesfully$(COLOR_WHITE)"
-
-$(OBJ_DIR):
-	mkdir -p $@
+	@echo -e "$(COLOR_GREEN)$(NAME) has compiled succesfully$(COLOR_WHITE)"
 
 $(LFT):
 	make -C $(LFTDIR)
 
 clean:
-	@echo "$(COLOR_BLUE)Removing all objects$(COLOR_WHITE)"
+	@echo -e "$(COLOR_BLUE)Removing all objects$(COLOR_WHITE)"
 	rm -rf $(OBJDIR)
-	cd $(LFTDIR) && make clean
+	make -C $(LFTDIR) clean
 
 fclean: clean
-	@echo "$(COLOR_BLUE)Removing $(NAME)$(COLOR_WHITE)"
-	rm -rf $(NAME)
+	@echo -e "$(COLOR_BLUE)Removing $(NAME)$(COLOR_WHITE)"
 	rm -rf $(BIN)
 	rm -rf bin/
 	rm -rf $(LFT)
 	rm -rf $(NAME)_$(HOSTTYPE).so
+	rm -rf $(NAME).so
 
 re: fclean all
 
@@ -85,3 +77,5 @@ norm:
 	@norminette ${SRC} ${INCDIR}* | grep Error || true
 
 .PHONY: all clean fclean re norm
+#export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+#LD_PRELOAD=./libft_malloc.so ./teste to test the malloc

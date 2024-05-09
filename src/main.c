@@ -6,20 +6,26 @@
 /*   By: mtomomit <mtomomit@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 19:52:53 by mtomomit          #+#    #+#             */
-/*   Updated: 2024/04/10 22:09:02 by mtomomit         ###   ########.fr       */
+/*   Updated: 2024/05/08 21:46:14 by mtomomit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "malloc.h"
-#include <unistd.h> // for sbrk
 
-void *malloc(size_t size) {
+void	*malloc(size_t __size)
+{
+	void	*mem;
+
 	ft_putstr_fd("malloc\n", 1);
-    void *mem = sbrk(size);
-    if (mem == (void *) -1) {
-        return NULL; // sbrk failed
-    } else {
-        return mem;
-    }
+	(void) __size;
+	mem = NULL;
+	if (mem == (void *) -1)
+	{
+		return (NULL);
+	}
+	else
+	{
+		return (mem);
+	}
 	ft_putstr_fd("malloc\n", 1);
 }

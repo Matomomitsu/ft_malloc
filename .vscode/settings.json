@@ -1,0 +1,10 @@
+{
+	"42header.email": "mtomomit@student.42sp.org.br",
+	"42header.username": "mtomomit",
+	"intellicode-completions-cdk.runAlongsideCopilot": true,
+	"files.associations": {
+		"stdlib.h": "c",
+		"malloc.h": "c",
+		"libft.h": "c"
+	}
+}
